@@ -76,21 +76,9 @@ let lighthouseKey = new Item("key", "An old rusted key.", true)
 let letter = new Item("letter", "The letter reads as so: 'My darling, \n I fear this is the last letter I will ever write you. By my count, my relief should have arrived 4 months ago. \n I have been abandoned. I finished the last of my rations weeks ago, and the gulls no longer land close enough for me to catch.  \n I gaze into the lighthouse’s great beacon at night as it signals to an empty sea. It speaks to me. I dare not relay what it says. \n The sun mocks me. I can no longer stand its great heat or rays. I will find somewhere dark to rest.'", true)
 let gasCan = new Item("gas can", "An old rusted can of gas. It should be light enough to carry.", true)
 
-actionArr = [
-  "move",
-  "go",
-  "take",
-  "pickup",
-  "read",
-  "inspect",
-  "open",
-  "drop",
-  "throw",
-  "enter",
-  "drive",
-  "start",
-  "turn",
-];
+const player = {
+  direction: ['north', 'south', 'east', 'west', 'up', 'down', 'left', 'right'],
+  movement: ['move', 'walk', 'run', 'climb', 'head', 'jump', 'go'],
+  action: ['take', 'pickup', 'read', 'use', 'inspect', 'examine', 'turn', 'start', 'drive', 'enter', 'open', 'drop', 'throw']
 
-//Or what if we make an object of the actions and targets and use them as key value pairs??
 }
