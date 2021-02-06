@@ -163,11 +163,11 @@ async function start() {
       console.log(`You can\'t get there from here`);
     }
   }
-  function changeInv(item) {
-    if (this.moveable === "take" || player.this.action === "pickup") {
-      currentRoom.inventory.pop()(player.playerInv.push(item));
-    } else if (player.this.action === "drop" || player.this.action === "throw")
-      player.pop.this.playerInv && currentRoom.push.this.inventory;
+  function takeInv(item) {
+    if (this.moveable) {
+      player.playerInv.push(this.name);
+      console.log("You've taken the " + item + ".");
+    } else console.log("You can't take that!")
   }
   const welcomeMessage = `You wake up on a small fishing boat that has landed upon a beach. You have no recollection of how you got there. Cliffs rise a hundred feet from the sand in front of you to the east. To the north and west there is only open ocean. The beach stretches to the south as far as the eye can see. There are keys in the ignition...\n>_`;
 
@@ -242,11 +242,19 @@ async function start() {
   answer = await ask (cave2.description + "\n>_")
 
   while (currentRoom === "cave2") {
-    if (answer === "move north" || answer === "move east" || answer === "move west") {
+    if (answer === "move south" || answer === "move east" || answer === "move west") {
       console.log("You cannot leave the cave this way");
     } else if (answer === "move north") {
       changeRoom("cave1");
       break;
+
+    } else if (answer === "inspect skeleton"){
+      console.log("The skeleton must have been here for years. It is completely decomposed. In its left hand is a folded letter. The small amount of light in the room reveals a key in the coat's front pocket.");
+    } else if (answer === "take key"){
+      takeInv("key");
+      console.log(player.playerInv)
+    } else if (answer === "take letter" || answer === "read letter"){
+      takeInv("letter");
     } else console.log("I don't understand");
       answer = await ask ("\n>_");
   }
@@ -258,6 +266,7 @@ async function start() {
       changeRoom = "beach1"
     } else if (answer === "move north" || answer === "move west" || "move south") {
       console.log("You cannot leave the lighthouse this way")
+
     } else console.log("I don't understand");
       answer = await ask ("\n>_");
   }
