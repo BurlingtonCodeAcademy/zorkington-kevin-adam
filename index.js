@@ -16,13 +16,9 @@ async function start() {
       "north",
       "south",
       "east",
-      "west",
-      "up",
-      "down",
-      "left",
-      "right",
+      "west"
     ],
-    movement: ["move", "walk", "run", "climb", "head", "jump", "go"],
+    movement: ["move", "go"],
     action: [
       "take",
       "pickup",
@@ -37,7 +33,7 @@ async function start() {
       "throw",
       "look",
     ],
-    playerInv: [""],
+    playerInv: [" "],
   };
 
   class Item {
@@ -181,12 +177,25 @@ async function start() {
   let answer = await ask(welcomeMessage);
   userIn = string_to_array(answer);
 
-  if (
-    player.movement.includes(userIn[0]) &&
-    player.direction.includes(userIn[1])
-  ) {
-    changeRoom("beach1");
-  }
+  while (!player.playerInv["gas can"] && currentRoom !== "boat"){
+
+
+
+    if ((userIn[0] === "move") && (userIn[1] === "north" || userIn[1] === "west")){
+      console.log ("The ocean stretches too far for you to swim your way out")
+        answer = await ask(boat.description);
+    }
+    else if (userIn[0] === "move" && userIn[1] === "east"){
+      console.log ("The cliffs are too high to climb")
+      answer = await ask (boat.description);
+    }
+    else if (userIn[0] === "move" && userIn[1] === "south"){
+      changeRoom("beach1")
+      answer = await ask (beach1.description)
+    }
+  
+
+  
 
   answer = await ask(beach1.description + ">_");
   userIn = string_to_array(answer);
@@ -210,4 +219,7 @@ async function start() {
 
   //while answer !== "exit" || answer !== "some text to move story along"
   //answer = await ask"I don't know how to " + answer + "?";
+
+
+}
 }
