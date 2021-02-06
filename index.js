@@ -118,9 +118,8 @@ async function start() {
 
   let beach2 = new Room(
     "beach2",
-    "The end of the beach. The sea stretches endlessly to the south and west. To your east, you see a small cave in the base of the cliff. The lighthouse towers to the northwest."[
-      ""
-    ],
+    "The end of the beach. The sea stretches endlessly to the south and west. To your east, you see a small cave in the base of the cliff. The lighthouse towers to the northwest.",
+    [],
     ["beach1", "cave1"], false
   );
 
@@ -149,9 +148,8 @@ async function start() {
     cave1: ["beach2", "cave2"],
     cave2: ["cave1"],
   };
-  function string_to_array(str) {
-    return str.trim().split(" ");
-  }
+
+  
 
   function changeRoom(nextRoom) {
     if (transitions[currentRoom].includes(nextRoom)) {
@@ -160,11 +158,11 @@ async function start() {
       console.log(`You can\'t get there from here`);
     }
   }
-  function changeInv(item) {
-    if (this.moveable === "take" || player.this.action === "pickup") {
-      currentRoom.inventory.pop()(player.playerInv.push(item));
-    } else if (player.this.action === "drop" || player.this.action === "throw")
-      player.pop.this.playerInv && currentRoom.push.this.inventory;
+  function takeInv(item) {
+    if (this.moveable) {
+      player.playerInv.push(this.item);
+      console.log("You've taken the " + item + " .");
+    } else console.log("You can't take that!");
   }
   const welcomeMessage = `You wake up on a small fishing boat that has landed upon a beach. You have no recollection of how you got there. 
   Cliffs rise a hundred feet from the sand in front of you to the east. To the north and west there is only open ocean. 
@@ -181,44 +179,68 @@ async function start() {
       changeRoom("beach1");
       break;
     } else if (answer === "move east") {
-      console.log("The cliffs are too high to climb");// issue when looping
-      answer = await ask("\n>_");
+      console.log("The cliffs are too high to climb");
     } else if (answer === "move north" || answer === "move west") {
       console.log("The ocean stretches too far for you to swim your way out");
-      answer = await ask("\n>_");
     } else console.log ("I don't understand")
       answer = await ask ("\n>_");
 
   }
   console.log(currentRoom);
   answer = await ask(beach1.description + "\n>_");
+
+
   while (currentRoom === "beach1"){
   
     
-    if ( answer === "move south") {
+    if (answer === "move south") {
       changeRoom("beach2");
       break;
     } else if (answer === "move north") {
       changeRoom("boat");
-      break;
+      //break;
     } else if (answer === "move east"){
       console.log ("The cliffs are too high to climb")
-      answer = await ask("\n>_");
-    } else if (answer === "move west"){
-      changeRoom("lighthouse");console.log(currentRoom);
-      break;
-    } else console.log ("I don't understand")
+    } else if (answer === "move west" && player.playerInv.includes("key")){
+      changeRoom("lighthouse");
+      //break;
+    }else if (answer === "move west" && !player.playerInv.includes("key")){
+      console.log ("The handle does not budge. Maybe there is a key nearby");
+
+    } else console.log ("I don't understand");
     answer = await ask ("\n>_")
   }  
-     
-    //answer = await ask(beach2.description + "\n>_");
 
-    //if (
-     // player.movement.includes("move") &&
-     // player.direction.includes("north")
-   // ) {
-      //changeRoom("boat");
-    //}
+  answer = await ask (beach2.description + "\n>_");
 
-  
+  while (currentRoom === "beach2"){
+
+    if (answer === "move east") {
+      changeRoom("cave1");
+      break;
+    } else if (answer === "move west" || answer === "move south") {
+      console.log ("The ocean stretches too far for you to swim your way out")
+    } else if (answer === "move north") {
+      changeRoom("beach1");
+      break;
+    } else console.log ("I don't understand");
+      answer = await ask ("\n>_")
+  }
+
+  answer = await ask (cave1.description + "\n>_")
+
+  while (currentRoom === "cave1"){
+
+    if (answer === "move south") {
+      changeRoom("cave2");
+      break;
+    } else if (answer === "move north" || answer === "move east") {
+      console.log ("You cannot leave the cave this way");
+    } else if (answer === "move west") {
+      changeRoom("beach2");
+      break;
+    } else console.log ("I don't understand");
+      answer = await ask ("\n>_")
+  }
+
 }
