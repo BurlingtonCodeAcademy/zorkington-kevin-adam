@@ -187,7 +187,21 @@ async function start() {
   ) {
     changeRoom("beach1");
   }
-  console.log(currentRoom);
+
+  answer = await ask(beach1.description + ">_");
+  userIn = string_to_array(answer);
+  if (
+    player.movement.includes(userIn[0]) &&
+    player.direction.includes(userIn[1])
+  ) {
+    changeRoom("beach2");
+  }
+  answer = await ask(beach2.description + ">_");
+
+  if (player.movement.includes("move") && player.direction.includes("north")) {
+    changeRoom("boat");
+  }
+  answer = await ask(boat.description + ">_");
 
   //new room
 
@@ -196,4 +210,5 @@ async function start() {
 
   //while answer !== "exit" || answer !== "some text to move story along"
   //answer = await ask"I don't know how to " + answer + "?";
+}
 }
