@@ -11,8 +11,6 @@ function ask(questionText) {
 }
 start();
 async function start() {
-
-
   //Player object. Includes directions player can move and actions to take, initialize inventory
   const player = {
     direction: ["north", "south", "east", "west"],
@@ -34,10 +32,9 @@ async function start() {
     playerInv: [],
   };
 
-
   //Classes
 
-  //Item class. 
+  //Item class.
   class Item {
     constructor(item, description, moveable) {
       this.item = item;
@@ -78,7 +75,7 @@ async function start() {
 
   let letter = new Item(
     "letter",
-    "The letter reads as so: 'My darling, \n I fear this is the last letter I will ever write you. By my count, my relief should have arrived 4 months ago. \n I have been abandoned. I finished the last of my rations weeks ago, and the gulls no longer land close enough for me to catch.  \n I gaze into the lighthouse’s great beacon at night as it signals to an empty sea. It speaks to me. I dare not relay what it says. \n The sun mocks me. I can no longer stand its great heat or rays. I will find somewhere dark to rest.'",
+    "The letter reads as so: 'My darling, \n I fear this is the last letter I will ever write you. By my count, my relief should have arrived 4 months ago. I have been abandoned\n. The last of my rations ran out weeks ago, and the gulls no longer land close enough for me to catch.  \n I gaze into the lighthouse’s great beacon at night as it signals to an empty sea. It speaks to me. I dare not relay what it says. \n The sun mocks me. I can no longer stand its great heat or rays. I will find somewhere dark to rest.'",
     true
   );
 
@@ -87,7 +84,6 @@ async function start() {
     "An old rusted can of gas. It should be light enough to carry.",
     true
   );
-
 
   //Rooms objects
 
@@ -138,7 +134,7 @@ async function start() {
     false
   );
 
-  /* below is the table that dictates what rooms each room leads to*/
+  /* below is the table that dictates what rooms each room can lead to*/
   let transitions = {
     boat: ["beach1"],
     beach1: ["lighthouse", "beach2", "boat"],
@@ -157,21 +153,21 @@ async function start() {
     }
   }
 
-  /*function for picking up items*/
+  /*function for picking up items. does not work currently. will be adjusted and resubmitted*/
   function take() {
     if (this.moveable) {
       player.playerInv.push(this.item);
       console.log("You've taken the " + this.item + ".");
     } else console.log("You can't take that!");
   }
-  const welcomeMessage = `You wake up on a small fishing boat that has landed upon a beach. You have no recollection of how you got there. Cliffs rise a hundred feet from the sand in front of you to the east. To the north and west there is only open ocean. The beach stretches to the south as far as the eye can see. There are keys in the ignition...\n\n>_`;
+  const welcomeMessage = `You wake up on a small fishing boat that has landed upon a beach. You have no recollection of how you got there. Cliffs rise a hundred feet from the sand in front of you to the east. To the north and west there is only open ocean. The beach stretches to the south as far as the eye can see. There are keys in the ignition...\n(Please enter "move" and the cardinal direction you wish to move. Enter "take" and the name of the item you wish to take to add it to your inventory. Enter "inspect" to learn more about and object. You may discover other commands as you play.)\n>_`;
 
   let currentRoom = "boat"; //sets the starting room
   let answer = await ask(welcomeMessage);
 
-  /*the following section dictates what happens in each room based on what the user inputs. each room is built as a loop, and then moves to next room/loop. working on going back to previous rooms*/
+  /*the following section dictates what happens in each room based on what the user inputs. each room is built as a loop, and then moves to next room/loop. currently cannot move to previous rooms. working on a way to allow this*/
+  // each loop allows certain actions to be taken depending on the status of currentRoom variable
   
- 
   while (currentRoom === "boat") {
     if (answer === "move south") {
       changeRoom("beach1");
@@ -188,13 +184,13 @@ async function start() {
       console.log(
         "The engine rumbles but does not turn over. The gas needle is on empty"
       );
-    } else if (answer === "take key"){
-    console.log(boatKey.description + "\nYou should leave this here.")
+    } else if (answer === "take key") {
+      console.log(boatKey.description + "\nYou should leave this here.");
     } else console.log("I don't understand");
     answer = await ask("\n>_");
   }
 
-  answer = await ask(beach1.description + "\n>_");
+  answer = await ask(beach1.description + "\n>_"); //description of next room, which prompts a user response. need to put in a loop or similar framework to be able to move back to previous rooms.
 
   while (currentRoom === "beach1") {
     if (answer === "move south") {
@@ -263,18 +259,17 @@ async function start() {
     } else if (answer === "take key") {
       player.playerInv.push(lighthouseKey);
       cave2.inventory.pop(lighthouseKey);
-      console.log(lighthouseKey.description)
+      console.log(lighthouseKey.description);
     } else if (answer === "take letter") {
       player.playerInv.push(letter);
       cave2.inventory.pop(letter);
-    } else if (answer === "read letter"){
+    } else if (answer === "read letter") {
       player.playerInv.push(letter);
       cave2.inventory.pop(letter);
-      console.log(letter.description)
-      }
-    else console.log("I don't understand");
+      console.log(letter.description);
+    } else console.log("I don't understand");
     answer = await ask("\n>_");
-}
+  }
 
   answer = await ask(lighthouse.description + "\n>_");
 
@@ -287,12 +282,21 @@ async function start() {
       "move south"
     ) {
       console.log("You cannot leave the lighthouse this way");
-    } else if (answer === "take gas can" || answer === "take gas" || answer === "take can"){
+    } else if (
+      answer === "take gas can" ||
+      answer === "take gas" ||
+      answer === "take can"
+    ) {
       player.playerInv.push(gasCan);
       lighthouse.inventory.pop(gasCan);
       console.log(gasCan.description);
     } else console.log("I don't understand");
     answer = await ask("\n>_");
   }
+  /*below is the endgame condition. will run if player is on boat and inventory includes gas can*/
+  if (currentRoom === boat && player.playerInv.includes("gas can")) {
+    console.log(
+      "You board the boat and empty the contents of the gas can into the tank. You turn the key and the engine rumbles to life. The controls of the boat feel familiar, although you are sure you’ve never piloted it before. The boat pulls away from the island which you hope to never see again. As you sail into the open ocean, you see dark clouds on the horizon. You hope the old boat can withstand rough seas…"
+    );
+  }
 }
-
