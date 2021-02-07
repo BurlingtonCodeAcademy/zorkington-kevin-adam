@@ -12,8 +12,8 @@ function ask(questionText) {
 start();
 async function start() {
   const player = {
-    direction: ["north", "south", "east", "west"],
-    movement: ["move", "go"],
+    direction: ["north", "south", "east", "west"],  //directions the player can move
+    movement: ["move", "go"],                       // actions the player can use
     action: [
       "take",
       "pickup",
@@ -28,11 +28,11 @@ async function start() {
       "throw",
       "look",
     ],
-    playerInv: [" "],
+    playerInv: [" "], //initializing the players inventory
   };
 
   class Item {
-    constructor(name, description, moveable, itemAction) {
+    constructor(name, description, moveable, itemAction) { //constructor for items. Includes if the item can be moved and what actions can be done to it.
       this.name = name;
       this.description = description;
       this.moveable = moveable;
@@ -40,7 +40,7 @@ async function start() {
     }
   }
   class Room {
-    constructor(name, description, inventory, connectingRooms) {
+    constructor(name, description, inventory, connectingRooms) {    //constructor for rooms. includes rooms inventory and what rooms the player can move to from there.
       this.name = name;
       this.description = description;
       this.inventory = inventory;
@@ -48,6 +48,7 @@ async function start() {
       this.islocked = false;
     }
   }
+/*----------------------------initializing objects-----------------*/
 
   let boatKey = new Item("key", "Ordinary boat key.", false, [
     "turn",
@@ -93,6 +94,7 @@ async function start() {
     true,
     ["take", "pick up", "drop", "examine", "inspect", "look at"]
   );
+/*-------------------------initializing rooms---------------*/
 
   let boat = new Room(
     "boat",
@@ -104,7 +106,7 @@ async function start() {
 
   let beach1 = new Room(
     "beach1",
-    "On this desolate patch of sand, there is a large, decrepit lighthouse on a small peninsula that juts into the ocean to the west . The door is sturdy and the handle is old and rusted. The cliffs to the east remain. The mysterious boat remains to the north. The beach continues to the south.",
+    "On this desolate patch of sand, there is a large, decrepit lighthouse on a small peninsula that juts into the ocean to the west . The door is sturdy and the handle is old and rusted. The cliffs to the east remain. The mysterious boat remains to the north. The beach continues to the south.\n\n",
     [],
     ["boat", "lighthouse", "beach2"],
     false
@@ -112,7 +114,7 @@ async function start() {
 
   let lighthouse = new Room(
     "lighthouse",
-    "The heavy door of the lighthouse creeks open. Beams of light shine in through the windows, catching the dust suspended in the air. The stairs that circle the inside walls of the lighthouse are crumbled, leaving the upper levels inaccessible. You wouldn’t climb them if you could. The smell of gasoline wafts from a large can in the room."[
+    "The heavy door of the lighthouse creeks open. Beams of light shine in through the windows, catching the dust suspended in the air. The stairs that circle the inside walls of the lighthouse are crumbled, leaving the upper levels inaccessible. You wouldn’t climb them if you could. The smell of gasoline wafts from a large can in the room.\n\n",[
       ("gasCan", " ")
     ],
     ["beach1"],
@@ -121,7 +123,7 @@ async function start() {
 
   let beach2 = new Room(
     "beach2",
-    "The end of the beach. The sea stretches endlessly to the south and west. To your east, you see a small cave in the base of the cliff. The lighthouse towers to the northwest.", 
+    "The end of the beach. The sea stretches endlessly to the south and west. To your east, you see a small cave in the base of the cliff. The lighthouse towers to the northwest.\n\n", 
     [],
     ["beach1", "cave1"],
     false
@@ -129,7 +131,7 @@ async function start() {
 
   let cave1 = new Room(
     "cave1",
-    "The small cave entrance opens up into a large chamber, lit by a torch on the wall. Snakes and spiders slither and scurry into the shadows as you enter. There appears to be another chamber in the cave to your south. The air is thick and still.",
+    "The small cave entrance opens up into a large chamber, lit by a torch on the wall. Snakes and spiders slither and scurry into the shadows as you enter. There appears to be another chamber in the cave to your south. The air is thick and still.\n\n",
     ["torch"],
     ["cave2", "beach2"],
     false
@@ -137,15 +139,15 @@ async function start() {
 
   let cave2 = new Room(
     "cave2",
-    "There is barely enough light in the room to see a figure slumped against the far wall of the chamber. It is a skeleton. Only bones and tattered clothes remain.",[
+    "There is barely enough light in the room to see a figure slumped against the far wall of the chamber. It is a skeleton. Only bones and tattered clothes remain.\n\n",[
       ("lighthouseKey", "letter", "skeleton")
     ],
     ["cave1"],
     false
   );
 
-  let currentRoom = "boat";
-
+  
+/* below is the table that dictates what rooms each room leads to*/
   let transitions = {
     boat: ["beach1"],
     beach1: ["lighthouse", "beach2", "boat"],
@@ -155,7 +157,7 @@ async function start() {
     cave2: ["cave1"],
   };
 
-
+/*function for moving from room to room*/
   function changeRoom(nextRoom) {
     if (transitions[currentRoom].includes(nextRoom)) {
       currentRoom = nextRoom;
@@ -163,22 +165,27 @@ async function start() {
       console.log(`You can\'t get there from here`);
     }
   }
+ 
+ /*function for picking up items*/
   function takeInv(item) {
     if (this.moveable) {
       player.playerInv.push(this.name);
       console.log("You've taken the " + item + ".");
     } else console.log("You can't take that!")
   }
-  const welcomeMessage = `You wake up on a small fishing boat that has landed upon a beach. You have no recollection of how you got there. Cliffs rise a hundred feet from the sand in front of you to the east. To the north and west there is only open ocean. The beach stretches to the south as far as the eye can see. There are keys in the ignition...\n>_`;
-
+  const welcomeMessage = `You wake up on a small fishing boat that has landed upon a beach. You have no recollection of how you got there. Cliffs rise a hundred feet from the sand in front of you to the east. To the north and west there is only open ocean. The beach stretches to the south as far as the eye can see. There are keys in the ignition...\n\n>_`;
+  
+  let currentRoom = "boat"; //sets the starting room
   let answer = await ask(welcomeMessage);
 
-  while (currentRoom === "boat") {
+
+  /*the following section dictates what happens in each room based on what the user inputs. each room is built as a loop, and then moves to next room/loop. working on going back to previous rooms*/
+  while (currentRoom === "boat") { 
     if (answer === "move south") {
       changeRoom("beach1");
       break;
     } else if (answer === "move east") {
-      console.log("The cliffs are too high to climb"); // issue when looping
+      console.log("The cliffs are too high to climb"); 
     } else if (answer === "move north" || answer === "move west") {
       console.log("The ocean stretches too far for you to swim your way out");
     } else if (answer === "turn key" || answer === "start boat" || answer === "start engine") {
